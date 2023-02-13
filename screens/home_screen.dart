@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -8,6 +10,21 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int totalSeconds = 1500;
+  // late사용: 당장초기화하지 않아도되는 값을 만들기위해
+  late Timer timer;
+
+  void onTick(Timer timer) {
+    setState(() {
+      totalSeconds = totalSeconds - 1;
+    });
+  }
+
+  void onStartPressed() {
+    // onTick을 지금 실행하지 않을거기때문에 onTick()이렇게 사용하지 않는다
+    timer = Timer.periodic(const Duration(seconds: 1), onTick);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '45:00',
+                        '$totalSeconds',
                         style: TextStyle(
                           color: Theme.of(context).cardColor,
                           fontSize: 88,
@@ -42,7 +59,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       IconButton(
                         icon: const Icon(Icons.play_circle_outline),
                         iconSize: 120,
-                        onPressed: () => {},
+                        onPressed: onStartPressed,
                         color: Theme.of(context).cardColor,
                       )
                     ],
