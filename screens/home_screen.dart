@@ -10,20 +10,32 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int totalSeconds = 1500;
+  static const twentyFiveMinutes = 1500;
+  int totalSeconds = twentyFiveMinutes;
   bool isRunning = false;
   // late사용: 당장초기화하지 않아도되는 값을 만들기위해
   late Timer timer;
+  int goal = 0;
 
   void onTick(Timer timer) {
-    setState(() {
-      totalSeconds = totalSeconds - 1;
-    });
+    if (totalSeconds == 0) {
+      setState(() {
+        totalSeconds = twentyFiveMinutes;
+        isRunning = false;
+        goal += 1;
+      });
+      timer.cancel();
+    } else {
+      setState(() {
+        totalSeconds = totalSeconds - 1;
+      });
+    }
   }
 
   void onStartPressed() {
     // onTick을 지금 실행하지 않을거기때문에 onTick()이렇게 사용하지 않는다
     timer = Timer.periodic(const Duration(seconds: 1), onTick);
+
     setState(() {
       isRunning = true;
     });
@@ -34,6 +46,12 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       isRunning = false;
     });
+  }
+
+  String format(int seconds) {
+    var duration = Duration(seconds: seconds);
+    var forMatting = duration.toString().split('.').first.substring(2, 7);
+    return forMatting;
   }
 
   @override
@@ -50,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '$totalSeconds',
+                        format(totalSeconds),
                         style: TextStyle(
                           color: Theme.of(context).cardColor,
                           fontSize: 88,
@@ -91,13 +109,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         horizontal: 10, vertical: 20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: const [
-                        EndBox(
+                      children: [
+                        const EndBox(
                             kindName: 'ROUNDED',
                             currentValue: 2,
                             totalValue: 4),
                         EndBox(
-                            kindName: 'GOAL', currentValue: 1, totalValue: 4),
+                            kindName: 'GOAL',
+                            currentValue: goal,
+                            totalValue: 4),
                       ],
                     ),
                   ),
