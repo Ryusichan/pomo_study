@@ -48,6 +48,14 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  void onRefreshPressed() {
+    timer.cancel();
+    setState(() {
+      totalSeconds = twentyFiveMinutes;
+      isRunning = false;
+    });
+  }
+
   String format(int seconds) {
     var duration = Duration(seconds: seconds);
     var forMatting = duration.toString().split('.').first.substring(2, 7);
@@ -65,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Container(
                   decoration: const BoxDecoration(),
                   child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
                         format(totalSeconds),
@@ -85,14 +93,31 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      IconButton(
-                        icon: isRunning
-                            ? const Icon(Icons.pause_circle_outlined)
-                            : const Icon(Icons.play_circle_outline),
-                        iconSize: 120,
-                        onPressed: isRunning ? onPausePressed : onStartPressed,
-                        color: Theme.of(context).cardColor,
-                      )
+                      isRunning
+                          ? IconButton(
+                              icon: const Icon(Icons.pause_circle_outlined),
+                              iconSize: 120,
+                              onPressed: onPausePressed,
+                              color: Theme.of(context).cardColor,
+                            )
+                          : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.play_circle_outline),
+                                  iconSize: 120,
+                                  onPressed: onStartPressed,
+                                  color: Theme.of(context).cardColor,
+                                ),
+                                if (totalSeconds < 1500)
+                                  IconButton(
+                                    icon: const Icon(Icons.replay_outlined),
+                                    iconSize: 40,
+                                    onPressed: onRefreshPressed,
+                                    color: Theme.of(context).cardColor,
+                                  )
+                              ],
+                            )
                     ],
                   ),
                 )),
